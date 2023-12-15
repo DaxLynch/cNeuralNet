@@ -4,7 +4,8 @@
 #include <wchar.h>
 #include <locale.h>
 #include <stdlib.h>
+#include <time.h>
 
-#include "dataLoader.h"
-#include "matrix.h"
-#include "sigmoid.h"
+#include "dataLoader.c"
+#include "matrix.c"
+#include "sigmoid.c"
