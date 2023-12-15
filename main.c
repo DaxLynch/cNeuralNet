@@ -1,5 +1,9 @@
 #include "main.h"
 
 int main(){
-	printf("ahha! \n");
+	data* datayums;
+	dataLoader(&datayums);
+	fileDataViewer("trainingData/train-images-idx3-ubyte");
+
 }
+

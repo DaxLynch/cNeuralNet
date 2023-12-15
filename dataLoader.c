@@ -1,8 +1,8 @@
 #include "dataLoader.h"
 
 void displayChar(unsigned char input){
-	wchar_t ret[] = {' ', 0x2593, 0x2592, 0x2591, 0x2599, 0x2588};
-	wprintf(L"%lc", ret[input/52]);
+	wchar_t ret[] = {' ', 0x2593, 0x2592, 0x2591, 0x25A9, 0x2588};
+	wprintf(L"%lc", ret[input/43]);
 }
 
 void* dataLoader(data** dataPointer){
