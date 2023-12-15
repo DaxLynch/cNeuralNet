@@ -29,7 +29,31 @@ int matMult(matrix* A, matrix* B, matrix* out){
 		return -1;
 	}
 	for(int i = 0; i < A->m; i++){
-	       for(int j = 0	
+	       for(int j = 0; j < B->n; j++){
+			for(int k = 0; k < A->m; k++){
+				out->array[i][j] = A->array[i][k] * B->array[k][j];
+			}
+	       }
+	}
+	return 0;
+}
+
+void printMatrix(matrix* mat) {
+    for (int i = 0; i < mat->m; i++) {
+        for (int j = 0; j < mat->n; j++) {
+            printf("%f\t", mat->array[i][j]);
+        }
+        printf("\n");
+    }
+}
+
+void freeArray(matrix* mat) {
+    for (int i = 0; i < mat->m; i++) {
+        free(mat->array[i]); // Free each row
+    }
+    
+    free(mat->array); // Free the array of rows
+}
 	
 
 
