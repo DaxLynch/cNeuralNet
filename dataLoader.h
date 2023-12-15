@@ -1,6 +1,5 @@
-#include "dataLoader.c"
 
 typedef struct{
-	float** array
-}
+	char array[784];
+} data;
 
