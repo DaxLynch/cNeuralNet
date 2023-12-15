@@ -9,17 +9,12 @@ double *b1, *b2;
 int epochs = 30;
 
 data* loadedData;
+	
+int main(){
+	network net;
+	networkInit(net, 728,30,10);
 
-void* batch_process(int* batch)
-int main()
-	for (int j = 0; j < epochs; j++){
-#do a random shuffle of the training data;
-		assign mini batches;
-		for each mini batch, do an update
-		every epoch, print out the test evaluations
-
-
-
+}
 
 
 
