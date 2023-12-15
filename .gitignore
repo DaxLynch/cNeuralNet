@@ -5,6 +5,9 @@
 # Prerequisites
 *.d
 
+trainingData
+a.out
+
 # Object files
 *.o
 *.ko
