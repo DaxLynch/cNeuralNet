@@ -7,10 +7,7 @@ void initMat(){
 void matrixAllocate(matrix* mat, int m, int n){
 	mat->m = m;
 	mat->n = n;
-	mat->array = (double**)calloc(m, sizeof(double*));
-	for(int i = 0; i < m; i++){
-		mat->array[i] = (double*)calloc(n, sizeof(double));
-	}
+	mat->array = (double*)calloc(m*n, sizeof(double*));
 }
 
 int matrixCopy(matrix* dst, matrix* src){
@@ -19,11 +16,11 @@ int matrixCopy(matrix* dst, matrix* src){
 		return -1;
 	}
 	int m = dst->m; int n = dst->n;
-	double** dPointer = dst->array;
-	double** sPointer = src->array;
+	double* dPointer = dst->array;
+	double* sPointer = src->array;
 	for (int i = 0; i < m; i++){
 		for (int j = 0; j < n; j++){
-			dPointer[i][j] = sPointer[i][j];
+			dPointer[i*m + j] = sPointer[i*m + j];
 		}	
 	}
 	return 0;
@@ -32,28 +29,23 @@ int matrixCopy(matrix* dst, matrix* src){
 void matrixRandFill(matrix* mat, int max){
 	for(int i = 0; i < mat->m; i++){
 		for(int j = 0; j < mat->n; j++){
-			mat->array[i][j] = (double)rand()/((double)(((double)RAND_MAX)/((double)max)));
+			mat->array[i*m + j] = (double)rand()/((double)(((double)RAND_MAX)/((double)max)));
 		}
 	}
 }
 
 int matrixTranspose(matrix* mat){
+	for(int i = 0; i < mat->m; i++){
+		for(int j = i + 1; j < mat->m; j++){
+			double temp = matrix[i * cols + j];
+			matrix[i * cols + j] = matrix[j * rows + i];
+			matrix[j * rows + i] = temp;	
+		}
+	}
 	int temp = mat->n;
 	mat->n = mat->m;
 	mat->m = temp;
-	double** newPointer = malloc(sizeof(double*)*mat->m);
-	for(int i = 0; i < mat->m; i++){
-		newPointer[i] = malloc(sizeof(double)*mat->n);
-		for(int j = 0; j < mat->n; j++){
-			newPointer[i][j] = mat->array[j][i];
-		};
-	}
-	for(int i = 0; i < mat->n; i++){
-		free(mat->array[i]);
-	}
-	free(mat->array);
-	mat->array = newPointer;
-	return 1;
+	return 0;
 }
 
 int matrixSigmoid(matrix* A){
@@ -76,14 +68,16 @@ int matrixSigmoidPrime(matrix* A){
 
 
 int matrixMult(matrix* A, matrix* B, matrix* out){
-	if (A->n != B->m){
+	if ((A->n != B->m)||(A->m != out->m)||(B->n != out->n)){
+		wprintf(L"(%d, %d) x (%d, %d) != (%d, %d)",A->m,A->n,B->n,B->m,out->m,out->n);
 		perror("matrixMult error: sizes incorrect");
 		return -1;
 	}
-	for(int i = 0; i < A->m; i++){
-	       for(int j = 0; j < B->n; j++){
-			for(int k = 0; k < A->m; k++){
-				out->array[i][j] = A->array[i][k] * B->array[k][j];
+	int am = A->m; int an = A->n; int bn = B->n; 
+	for(int i = 0; i < am; i++){
+	       for(int j = 0; j < bn; j++){
+			for(int k = 0; k < an; k++){
+				out->array[i*am + j] = A->array[i*am + k] * B->array[k*an + j];
 			}
 	       }
 	}

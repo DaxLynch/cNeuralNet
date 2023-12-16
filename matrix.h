@@ -1,5 +1,5 @@
 typedef struct{
-	double** array;
+	double* array;
 	int m; int n;
 } matrix;
 

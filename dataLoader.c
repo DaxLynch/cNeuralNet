@@ -13,13 +13,11 @@ void* dataLoader(data** dataPointer){
 	fread(bs, 16, 1, training_images);
 	char buf[28*28];
 	for(int m = 0; m < 1000; m++){
-		matrixAllocate(&((*dataPointer)[m].matrix), 28*28, 1);
+		matrixAllocate(&((*dataPointer)[m].matrix), 728, 1);
 		fread(buf, 28*28, 1, training_images);
-		for(int i = 0; i <28; i++){
-			for(int j = 0; j < 28; j++){
-				(*dataPointer)[m].matrix.array[i*28 + j][0] = buf[i*28 + j];	
-			}
-		}	
+		for(int i = 0; i <728; i++){
+			(*dataPointer)[m].matrix.array[i][0] = buf[i];	
+		}
 	}
 	fclose(training_images);
 }
