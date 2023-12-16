@@ -1,7 +1,7 @@
 typedef struct {
 	int* sizes;
-	double*** weights;
-	double** biases;
+	matrix* weights;
+	matrix* biases;
 	int num_layers;
 } network;
 

@@ -1,6 +1,5 @@
 typedef struct{
-	float** array;
+	double** array;
 	int m; int n;
 } matrix;
-
 

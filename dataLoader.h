@@ -1,4 +1,5 @@
 typedef struct{
-	char array[784];
+	matrix matrix;
+	int truth;
 } data;
 

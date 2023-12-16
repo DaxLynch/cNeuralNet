@@ -8,6 +8,6 @@
 #include <stdarg.h>
 
 
-#include "dataLoader.c"
 #include "matrix.c"
+#include "dataLoader.c"
 #include "network.c"

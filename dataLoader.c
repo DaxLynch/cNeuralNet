@@ -1,3 +1,4 @@
+
 #include "dataLoader.h"
 
 void displayChar(unsigned char input){	
@@ -10,8 +11,13 @@ void* dataLoader(data** dataPointer){
 	unsigned char bs[16];
 	*dataPointer = malloc(sizeof(data) * 1000);
 	fread(bs, 16, 1, training_images);
-	for(int m = 0; m < 1000; m++){	
-		fread((*dataPointer)[m].array, 28*28, 1, training_images);
+	char buf[28];
+	for(int m = 0; m < 1000; m++){
+		matrixAllocate(&((*dataPointer)[m].matrix), 28*28, 1);
+		fread(buf, 28*28, 1, training_images);
+		for(int i = 0; i <28; i++){
+			memcpy(&((*dataPointer)[m].matrix.array[i]), &buf[i*28], 28);
+		}
 	}
 	fclose(training_images);
 }
@@ -40,9 +46,17 @@ void fileDataViewer(char* inputFile){ //"trainingData/train-images.idx3-ubyte",
 void structDataViewer(data* dataPointer){
 	for(int i = 0; i < 28; i++){
 		for(int j = 0; j < 28; j++){
-			displayChar(dataPointer->array[i*28 + j]);
+			displayChar(dataPointer->matrix.array[i][j]);
 		}
 		wprintf(L"\n");
 	}
 	printf("\n");
+}
+
+
+void* dataFree(data** dataPointer){
+	for(int m = 0; m < 1000; m++){
+		matrixFree(&((*dataPointer)[m].matrix));
+	}
+	free(*dataPointer);
 }
