@@ -73,13 +73,13 @@ void update_mini_batch(network* net, int batch_size, data* batch_list){
 	networkFree(&nabla); //deallocate
 } 
 
-void backprop(network* nabla, network* net, int i, data* batch_list){
+void backprop(network* nabla, network* net, int x, data* batch_list){
 	len = net->num_layers;
 	matrix* activations = malloc(sizeof(vector)*len); //free me!
 	matrix* zactivations = malloc(sizeof(vector)*(len - 1)); //free me!
 	
 	matrixAllocate(&activations[0], net->size[0],1); //free me
-	matrixCopy(&activations[0], &batch_list[i].matrix);
+	matrixCopy(&activations[0], &batch_list[x].matrix);
 	for(int i = 1; i < len; i++){
 		matrixAllocate(zactivations[i-1], net->sizes[i]); //free me
 		matrixMult(&net->weight[i-1],activations[i-1], zactivations[i-1]);
@@ -89,13 +89,23 @@ void backprop(network* nabla, network* net, int i, data* batch_list){
 		matrixCopy(&activations[i], vectorSigmoid(z));
 	}
 	int y = batch_list[i].truth; //only relevant to this data SHould be changed to a truth vector
-
-	nabla->biases[len].array[y][0];
-
-
-	matrixAllocate(&delta, sizes[len],1);
-	delta.array;	
 	
+	&activations[len].array[y][0] -= 1;
+	matrixSigmoid(&zactivations[len-1]);
+	matrixHamProd(&activations[len], &zactivations[len - 1]);
+
+	matrixCopy(&nabla->biases[len-1], &activations[len]); //add size check for mat copy
+	
+	matrixTranspose(&activations[len - 1]); //make this
+	matrixMult(&activation[len], &activations[len - 1], &nabla->weights[len-1]);
+
+	for(int i = len - 1; i > 1; i--){
+		matrixSigmoid(&zactivations[i-1]);
+		ma
+		matrixMult(&net->weights[i],)
+
+
+	}	
 
 
 }
