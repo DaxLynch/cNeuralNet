@@ -8,8 +8,12 @@ int main(){
 
 	data* datayums;
 	dataLoader(&datayums);
-	update_mini_batch(&net, 10, datayums);
 	dataFree(&datayums);
+	
+	network nabla; networkSizeAllocate(&nabla, &net);
+	backprop(&nabla, &net, 1, datayums);
+
+	//	update_mini_batch(&net, 10, datayums);	dataFree(&datayums);
 	networkFree(&net);
 }
 
