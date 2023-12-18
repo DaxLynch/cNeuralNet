@@ -1,5 +1,3 @@
-#include "matrix.h"
-
 void initMat(){
 	srand(time(NULL));
 }

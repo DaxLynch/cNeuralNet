@@ -6,6 +6,9 @@
 #include <math.h>
 #include <time.h>
 #include <stdarg.h>
+#include "matrix.h"
+#include "dataLoader.h"
+#include "network.h"
 
 #include "sigmoid.c"
 #include "matrix.c"

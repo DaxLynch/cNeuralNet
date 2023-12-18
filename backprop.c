@@ -9,7 +9,6 @@ void backprop(network* nabla, network* net, int x, data* batch_list){
 		matrix z; 
 		matrixAllocate(&z, net->sizes[i], 1);
 		matrixAllocate(&zactivations[i-1], net->sizes[i], 1);
-		wprintf(L"%d loop\n", i);
 		matrixMult(&net->weights[i-1], &activations[i-1], &z);
 		matrixAdd(&z, &net->biases[i-1]);
 

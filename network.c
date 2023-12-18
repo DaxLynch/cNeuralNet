@@ -53,14 +53,14 @@ void networkFree(network* net){
 
 
 
-void update_mini_batch(network* net, double eta, int batch_size, data* batch_list){
+void update_mini_batch(network* net, double eta, int batch_size, int* batch_list, data* data_set){
 	network nabla;
 	int len = net->num_layers;
 	networkSizeAllocate(&nabla, net); //allocate	
 	for(int i = 0; i < batch_size; i++){
 		network delta_nabla;
 		networkSizeAllocate(&delta_nabla, net); //Allocate
-	       	backprop(&delta_nabla, net, i, batch_list);
+	       	backprop(&delta_nabla, net, batch_list[i], data_set);
 		for(int j = 0; j < len - 1; j++){
 			matrixAdd(&(nabla.weights[j]),&(delta_nabla.weights[j]));
 			matrixAdd(&(nabla.biases[j]),&(delta_nabla.biases[j]));
@@ -77,4 +77,65 @@ void update_mini_batch(network* net, double eta, int batch_size, data* batch_lis
 	networkFree(&nabla); //deallocate
 } 
 
+void shuffle(int *array, size_t n)
+{
+    if (n > 1) 
+    {
+        size_t i;
+        for (i = 0; i < n - 1; i++) 
+        {
+          size_t j = i + rand() / (RAND_MAX / (n - i) + 1);
+          int t = array[j];
+          array[j] = array[i];
+          array[i] = t;
+        }
+    }
+}
+
+void networkSGD(network* net, data* dataset, int dataLength, int epochs, int batch_size, double eta){
+	for (int j = 0; j < epochs; j++){
+		wprintf(L"Starting epoch:%d \n", j);
+		int* shuffled = malloc(sizeof(int) * dataLength);
+		for(int i = 0; i < dataLength; i++){
+			shuffled[i] = i;
+		}
+		shuffle(shuffled, dataLength);
+		for( int i = 0; i < dataLength/batch_size; i++){
+			update_mini_batch(net, .05, batch_size,  shuffled + (batch_size*i), dataset);
+		}
+
+	
+	}
+}
+
+int evaluate(network* net, data* datum){
+	int len = net->num_layers;
+	dataStructViewer(datum);
+	matrix* activations = malloc(sizeof(matrix)*len); 
+	matrixAllocate(&activations[0], net->sizes[0],1);
+	matrixCopy(&activations[0], &datum->matrix);
+	
+	for(int i = 1; i < len; i++){
+		matrix z; 
+		matrixAllocate(&z, net->sizes[i], 1);
+		matrixMult(&net->weights[i-1], &activations[i-1], &z);
+		matrixAdd(&z, &net->biases[i-1]);
+
+
+		matrixAllocate(&activations[i], net->sizes[i], 1); 
+		matrixSigmoid(&z);
+		matrixCopy(&activations[i], &z);
+		matrixFree(&z);
+	}
+	double max = 0;
+	int maxArg;
+	for(int i = 0; i < 10; i++){
+		if (activations[len - 1].matrix[i] => max){
+			max = activations[len -1].matrix[i];
+			maxArg = i;
+		}
+	}
+	wprintf("returned %d with value of %.2lf, true value is %d\n", maxArg, max, datum->truth);
+	return maxArg;
+}
 #include "backprop.c"

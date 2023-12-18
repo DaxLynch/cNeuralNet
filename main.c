@@ -10,14 +10,17 @@ int main(){
 	network nabla;
        	networkSizeAllocate(&nabla, &net);
 	data* datayums;
-	dataLoader(&datayums);
+	dataLoader(&datayums, "trainingData/train-images.idx3-ubyte", "trainingData/train-labels.idx1-ubyte", 60000);
 	structDataViewer(datayums);
 //	structDataViewer(datayums+1 );
 //	structDataViewer(datayums+2 );
 //	structDataViewer(datayums+3 );
 //	fileDataViewer("trainingData/train-images.idx3-ubyte");	
 	
-	update_mini_batch(&net, .05, 20, datayums);
+	networkSGD(&net, datayums, 1000, 3, 100, .05);
+
+	evaluate(&net, datayums);
+
 	networkFree(&net);
 	networkFree(&nabla);
 	dataFree(&datayums);

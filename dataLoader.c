@@ -1,20 +1,17 @@
-
-#include "dataLoader.h"
-
 void displayChar(unsigned char input){	
 	wchar_t ret[] = {' ', 0x2593, 0x2592, 0x2591, 0x25A9, 0x2588};
 	wprintf(L"%lc", ret[input/43]);
 }
 
-void dataLoader(data** dataPointer){
-	FILE* training_images = fopen("trainingData/train-images.idx3-ubyte", "rb");
-	FILE* training_labels = fopen("trainingData/train-labels.idx1-ubyte", "rb");
+void dataLoader(data** dataPointer, char* images, char* labels, int dataLength){
+	FILE* training_images = fopen(images, "rb");
+	FILE* training_labels = fopen(labels, "rb");
 	unsigned char bs[16];
-	*dataPointer = malloc(sizeof(data) * 1000);
+	*dataPointer = malloc(sizeof(data) * dataLength);
 	fread(bs, 16, 1, training_images);
 	fread(bs, 8, 1, training_labels);
 	unsigned char buff[28*28];
-	for(int m = 0; m < 1000; m++){
+	for(int m = 0; m < dataLength; m++){
 		matrixAllocate(&((*dataPointer)[m].matrix), 784, 1);	
 		fread(buff, 1, 28*28, training_images);
 		for(int i = 0; i < 28 * 28; i ++){
