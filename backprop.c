@@ -1,6 +1,6 @@
 void backprop(network* nabla, network* net, int x, data* batch_list){
 	int len = net->num_layers;
-	matric* activations = malloc(sizeof(matrix)*len); 
+	matrix* activations = malloc(sizeof(matrix)*len); 
 	matrix* zactivations = malloc(sizeof(matrix)*(len - 1)); 
 	matrixAllocate(&activations[0], net->sizes[0],1);
 	matrixCopy(&activations[0], &batch_list[x].matrix);
@@ -9,7 +9,7 @@ void backprop(network* nabla, network* net, int x, data* batch_list){
 		matrix z; 
 		matrixAllocate(&z, net->sizes[i], 1);
 		matrixAllocate(&zactivations[i-1], net->sizes[i], 1);
-
+		wprintf(L"%d loop\n", i);
 		matrixMult(&net->weights[i-1], &activations[i-1], &z);
 		matrixAdd(&z, &net->biases[i-1]);
 
@@ -21,11 +21,13 @@ void backprop(network* nabla, network* net, int x, data* batch_list){
 		matrixFree(&z);
 	}
 	int y = batch_list[x].truth; //only relevant to this data SHould be changed to a truth vector
-	
+//	wprintf(L"Y: %d",y);	
 	matrix delta;
 	matrixAllocate(&delta, net->sizes[len-1], 1);
+//	matrixPrint(&delta);
 	matrixCopy(&delta, &activations[len-1]);
-	delta.array[y][0] - 1;
+	delta.array[y] -= 1;
+//	matrixPrint(&delta);
 
 	matrixSigmoidPrime(&zactivations[len-2]);
 	matrixHamProd(&delta, &zactivations[len-2]);
@@ -37,7 +39,6 @@ void backprop(network* nabla, network* net, int x, data* batch_list){
 	for(int i = len - 2; i > 0; i--){
 		matrix weightsT;
 		matrixAllocate(&weightsT, net->weights[i].m, net->weights[i].n); //free me
-		wprintf(L"Here poop %d? \n", net->weights[i].m);
 		matrixCopy(&weightsT, &net->weights[i]);
 		matrixTranspose(&weightsT);
 
@@ -49,13 +50,12 @@ void backprop(network* nabla, network* net, int x, data* batch_list){
 		matrixMult(&weightsT,&delta, &delta0);
 	        matrixFree(&delta);
 	        matrixFree(&weightsT);
-		delta = delta0;	
+		delta = delta0;
 		matrixHamProd(&delta, &zactivations[i-1]);
 
-		matrixCopy(&nabla->biases[i], &delta);
+		matrixCopy(&nabla->biases[i-1], &delta);
 		matrixTranspose(&activations[i-1]);
 		matrixMult(&delta, &activations[i-1], &nabla->weights[i-1]);
-
 	}
 	matrixFree(&delta);
 

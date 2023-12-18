@@ -2,17 +2,18 @@
 
 void initMat(){
 	srand(time(NULL));
-};
+}
 
 void matrixAllocate(matrix* mat, int m, int n){
 	mat->m = m;
 	mat->n = n;
-	mat->array = (double*)calloc(m*n, sizeof(double*));
+	mat->array = (double*)calloc(m*n, sizeof(double));
 }
 
 int matrixCopy(matrix* dst, matrix* src){
 	if ((dst->n != src->n) || (dst->m != src->m)){
-		perror("matrixCopy wrong dimension");
+		wprintf(L"(%d, %d) != (%d, %d)\n",dst->m,dst->n,src->m,src->n);
+		wprintf(L"matrixCopy wrong dimension\n");
 		return -1;
 	}
 	int m = dst->m; int n = dst->n;
@@ -20,49 +21,66 @@ int matrixCopy(matrix* dst, matrix* src){
 	double* sPointer = src->array;
 	for (int i = 0; i < m; i++){
 		for (int j = 0; j < n; j++){
-			dPointer[i*m + j] = sPointer[i*m + j];
+			dPointer[i*n + j] = sPointer[i*n + j];
 		}	
 	}
 	return 0;
 }
 
 void matrixRandFill(matrix* mat, int max){
-	for(int i = 0; i < mat->m; i++){
-		for(int j = 0; j < mat->n; j++){
-			mat->array[i*m + j] = (double)rand()/((double)(((double)RAND_MAX)/((double)max)));
+	int m = mat->m; int n = mat->n;
+	for(int i = 0; i < m; i++){
+		for(int j = 0; j < n; j++){
+			mat->array[i*n + j] = (double)rand()/((double)(((double)RAND_MAX)/((double)max)));
+		}
+	}
+}
+
+void matrixScalar(matrix* mat, double scalar){
+	int m = mat->m; int n = mat->n;
+	for(int i = 0; i < m; i++){
+		for(int j = 0; j < n; j++){
+			mat->array[i*n + j] *= scalar;
 		}
 	}
 }
 
 int matrixTranspose(matrix* mat){
-	for(int i = 0; i < mat->m; i++){
-		for(int j = i + 1; j < mat->m; j++){
-			double temp = matrix[i * cols + j];
-			matrix[i * cols + j] = matrix[j * rows + i];
-			matrix[j * rows + i] = temp;	
+	double* matrix = mat->array;
+	int m = mat->m; int n = mat->n;
+	double* newMat = malloc(sizeof(double) * m*n);
+
+	for(int i = 0; i < m; i++){
+		for(int j = 0; j < n; j++){
+			newMat[j*m + i] = matrix[i*n + j];
 		}
 	}
-	int temp = mat->n;
 	mat->n = mat->m;
-	mat->m = temp;
+	mat->m = n;
+	free(mat->array);
+	mat->array = newMat;
 	return 0;
 }
 
 int matrixSigmoid(matrix* A){
 	if (A->n != 1){
 		perror("Cannot do sigmoid");
+		return -1;
 	};
 	for(int i = 0; i < A->m; i++){
-		A->array[i][0] = sigmoid(A->array[i][0]);
+		A->array[i] = sigmoid(A->array[i]);
 	}
+	return 0;
 }
 int matrixSigmoidPrime(matrix* A){
 	if (A->n != 1){
 		perror("Cannot do sigmoid prime");
+		return -1;
 	};
 	for(int i = 0; i < A->m; i++){
-		A->array[i][0] = sigmoidPrime(A->array[i][0]);
+		A->array[i] = sigmoidPrime(A->array[i]);
 	}
+	return 0;
 }
 
 
@@ -77,7 +95,7 @@ int matrixMult(matrix* A, matrix* B, matrix* out){
 	for(int i = 0; i < am; i++){
 	       for(int j = 0; j < bn; j++){
 			for(int k = 0; k < an; k++){
-				out->array[i*am + j] = A->array[i*am + k] * B->array[k*an + j];
+				out->array[i*bn + j] += A->array[i*an + k] * B->array[k*bn + j];
 			}
 	       }
 	}
@@ -90,11 +108,11 @@ int matrixAdd(matrix* dst, matrix* src){ //in place,a s opposed to matrix multip
 		return -1;
 	}
 	int m = dst->m; int n = dst->n;
-	double** dpointer = dst->array;
-	double** spointer = src->array;
+	double* dpointer = dst->array;
+	double* spointer = src->array;
 	for (int i = 0; i < m; i++){
 		for (int j = 0; j < n; j++){
-			dpointer[i][j] += spointer[i][j];
+			dpointer[i*n + j] += spointer[i*n + j];
 		}	
 	}
 	return 0;
@@ -106,30 +124,27 @@ int matrixHamProd(matrix* dst, matrix* src){ //in place,a s opposed to matrix mu
 		return -1;
 	}
 	int m = dst->m; int n = dst->n;
-	double** dpointer = dst->array;
-	double** spointer = src->array;
+	double* dpointer = dst->array;
+	double* spointer = src->array;
 	for (int i = 0; i < m; i++){
 		for (int j = 0; j < n; j++){
-			dpointer[i][j] *= spointer[i][j];
+			dpointer[i * n + j] *= spointer[i*n + j];
 		}	
 	}
 	return 0;
 }
 
 void matrixPrint(matrix* mat) {
-    for (int i = 0; i < mat->m; i++) {
-        for (int j = 0; j < mat->n; j++) {
-            wprintf(L" %lf ", mat->array[i][j]);
+	int m = mat->m; int n = mat->n;
+    for (int i = 0; i < m; i++) {
+        for (int j = 0; j < n; j++) {
+            wprintf(L" %lf ", mat->array[i*n + j]);
         }
         wprintf(L"\n");
     }
 }
 
 void matrixFree(matrix* mat) {
-    for (int i = 0; i < mat->m; i++) {
-        free(mat->array[i]); // Free each row
-    }
-    
     free(mat->array); // Free the array of rows
 }
 
