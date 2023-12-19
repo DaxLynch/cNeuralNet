@@ -14,6 +14,7 @@ I followed this textbook, http://neuralnetworksanddeeplearning.com,
 which had very good information regarding the algorithms for the implementation. 
 
 ## Results
+# In the below output, I ran the program and got 95% accuracy on the mnist dataset
 cc main.c -o net.exe -lm -g -Wall -pedantic  
 ./net.exe  
 Starting epoch: 0  
@@ -46,8 +47,6 @@ Press q to exit, press any character to see the next evaluation
           ▒█▩
 
 returned 7 with value of 0.99, true value is 7  
-
-In the above output, I ran the program and got 95% accuracy on the mnist dataset.   
 
 ## Conclusion
 The conclusion I gained from all of this is to use BLAS and python as they greatly simplify and expediate the process. However I am thankful I learned lots regarding backproagation, and multithreaded matrix multiplication algorithms.
