@@ -2,7 +2,7 @@
 
 ## Introduction
 
-This project is a simple digit classifier for the MNIST dataset implemented in C. The primary goal is to revisit and reinforce the understanding of the backpropagation algorithm by implementing a neural network from scratch. In doing so I had to make a c matrix library, which I used as an opportunity to make optimized multithreaded matrix algorithms, utilizing either openMP, pthreads, or CUDA.
+This project is a simple digit classifier for the MNIST dataset implemented in C. The primary goal is to revisit and reinforce the understanding of the backpropagation algorithm by implementing a neural network from scratch. In doing so I had to make a c matrix library, which I used as an opportunity to learn about optimized multithreaded matrix algorithms, utilizing either openMP, pthreads, or CUDA.
 
 ### Key Objectives
 
