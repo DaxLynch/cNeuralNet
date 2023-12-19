@@ -10,7 +10,10 @@
 #include "dataLoader.h"
 #include "network.h"
 #include "sigmoid.h"
+#include "evaluate.h"
 
+
+#include "evaluate.c"
 #include "backprop.c"
 #include "sigmoid.c"
 #include "matrix.c"

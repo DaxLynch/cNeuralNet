@@ -2,28 +2,8 @@ double sigmoid(double z){
 	return (double)1.0/((double)1.0 + exp(-z));
 }
 double sigmoidPrime(double z){
-	return sigmoid(z) * ((double)1.0 - sigmoid(z));
+	return (double)sigmoid(z) * ((double)1.0 - (double)sigmoid(z));
 }
-double softplus(double z){
-	if (z > 5){
-		return z;
-	}
-	if (z < 5){
-		return 0;
-	}
-	return log((double)1.0 + exp(z));
-}
-double softplusPrime(double z){
-	if(z > 5){
-		return 1;
-	}
-	if(z < 5){
-		return 0;
-	}
-
-	return (double)1.0 / ((double)1.0 + exp(-z));
-}
-
 double uniformlyRandD(){
 	return (double)rand()/((double)(((double)RAND_MAX)/((double)1.0)));
 }

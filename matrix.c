@@ -70,16 +70,7 @@ int matrixSigmoid(matrix* A){
 	}
 	return 0;
 }
-int matrixSoftplus(matrix* A){
-	if (A->n != 1){
-		perror("Cannot do softplus");
-		return -1;
-	};
-	for(int i = 0; i < A->m; i++){
-		A->array[i] = softplus(A->array[i]);
-	}
-	return 0;
-}
+
 int matrixSigmoidPrime(matrix* A){
 	if (A->n != 1){
 		perror("Cannot do sigmoid prime");
@@ -87,16 +78,6 @@ int matrixSigmoidPrime(matrix* A){
 	};
 	for(int i = 0; i < A->m; i++){
 		A->array[i] = sigmoidPrime(A->array[i]);
-	}
-	return 0;
-}
-int matrixSoftplusPrime(matrix* A){
-	if (A->n != 1){
-		perror("Cannot do softplus prime");
-		return -1;
-	};
-	for(int i = 0; i < A->m; i++){
-		A->array[i] = softplusPrime(A->array[i]);
 	}
 	return 0;
 }

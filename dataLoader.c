@@ -57,8 +57,8 @@ void structDataViewer(data* dataPointer){
 }
 
 
-void dataFree(data** dataPointer){
-	for(int m = 0; m < 1000; m++){
+void dataFree(data** dataPointer, int dataLength){
+	for(int m = 0; m < dataLength; m++){
 		matrixFree(&((*dataPointer)[m].matrix));
 	}
 	free(*dataPointer);
