@@ -6,24 +6,24 @@ int main(){
 	network net;
 
 	networkAllocate(&net,3, 784, 30, 10);
-
-	network nabla;
-       	networkSizeAllocate(&nabla, &net);
-	data* datayums;
-	dataLoader(&datayums, "trainingData/train-images.idx3-ubyte", "trainingData/train-labels.idx1-ubyte", 60000);
-	structDataViewer(datayums);
+	networkWeightsInit(&net);
+	
+	data* dati;
+	data* trainingData;
+	int dataLength = 10000;
+	dataLoader(&dati, "trainingData/train-images.idx3-ubyte", "trainingData/train-labels.idx1-ubyte", dataLength*6);
+	dataLoader(&trainingData, "trainingData/t10k-images.idx3-ubyte", "trainingData/t10k-labels.idx1-ubyte", dataLength);
 //	structDataViewer(datayums+1 );
 //	structDataViewer(datayums+2 );
 //	structDataViewer(datayums+3 );
 //	fileDataViewer("trainingData/train-images.idx3-ubyte");	
 	
-	networkSGD(&net, datayums, 1000, 3, 100, .05);
+	networkSGD(&net, dati, dataLength*6, trainingData, dataLength, 1, 1, 100, 5);
 
-	evaluate(&net, datayums);
+	evaluate(&net, dati, 1);
 
 	networkFree(&net);
-	networkFree(&nabla);
-	dataFree(&datayums);
+	dataFree(&dati);
 
 
 	//	update_mini_batch(&net, 10, datayums);	dataFree(&datayums);

@@ -16,7 +16,7 @@ void backprop(network* nabla, network* net, int x, data* batch_list){
 
 		matrixAllocate(&activations[i], net->sizes[i], 1); 
 		matrixSigmoid(&z);
-		matrixCopy(&activations[i], &z);
+		
 		matrixFree(&z);
 	}
 	int y = batch_list[x].truth; //only relevant to this data SHould be changed to a truth vector

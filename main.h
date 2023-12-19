@@ -9,7 +9,9 @@
 #include "matrix.h"
 #include "dataLoader.h"
 #include "network.h"
+#include "sigmoid.h"
 
+#include "backprop.c"
 #include "sigmoid.c"
 #include "matrix.c"
 #include "dataLoader.c"
