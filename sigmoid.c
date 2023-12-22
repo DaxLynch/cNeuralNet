@@ -10,8 +10,8 @@ double uniformlyRandD(){
 double gaussian(){
 	double u1; double u2;
 
-	u1 = uniformlyRandD(0,1);
-	u2 = uniformlyRandD(0,1);
+	u1 = uniformlyRandD();
+	u2 = uniformlyRandD();
 	double z1 = sqrt(-2 * log(u1))*cos(2*M_PI * u2);
 	return z1;
 }

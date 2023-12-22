@@ -15,7 +15,7 @@ void dataLoader(data** dataPointer, char* images, char* labels, int dataLength){
 		matrixAllocate(&((*dataPointer)[m].matrix), 784, 1);	
 		fread(buff, 1, 28*28, training_images);
 		for(int i = 0; i < 28 * 28; i ++){
-			(*dataPointer)[m].matrix.array[i] = (double)buff[i];
+			(*dataPointer)[m].matrix.array[i] = (double)buff[i]/(double)255.0;
 		}
 		unsigned char temp;
 		fread(&temp, 1, 1, training_labels);
