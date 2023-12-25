@@ -1,0 +1,2 @@
+double uniformlyRandD();
+double gaussian();

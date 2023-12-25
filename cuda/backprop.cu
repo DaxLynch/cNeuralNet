@@ -1,10 +1,14 @@
+__global__ void matsubone(float* array, int y){
+	array[y] -= 1;
+}
+
 void backprop(network* nabla, network* net, int x, data* batch_list){
 	int len = net->num_layers;
-	matrix* activations = malloc(sizeof(matrix)*len); 
-	matrix* zactivations = malloc(sizeof(matrix)*(len - 1)); 
+	matrix* activations = (matrix*) malloc(sizeof(matrix)*len); 
+	matrix* zactivations = (matrix*)malloc(sizeof(matrix)*(len - 1)); 
 	matrixAllocate(&activations[0], net->sizes[0],1);
 	matrixCopy(&activations[0], &batch_list[x].matrix);
-	
+
 	for(int i = 1; i < len; i++){
 		matrix z; 
 		matrixAllocate(&z, net->sizes[i], 1);
@@ -16,18 +20,19 @@ void backprop(network* nabla, network* net, int x, data* batch_list){
 
 		matrixAllocate(&activations[i], net->sizes[i], 1); 
 		matrixSigmoid(&z);
-		matrixCopy(&activations[i], &z);
 		
+		matrixCopy(&activations[i], &z);
+
 		matrixFree(&z);
 	}
 	int y = batch_list[x].truth; //only relevant to this data SHould be changed to a truth vector
-	//wprintf(L"Y: %d",y);	
+	
+	//printf("Y: %d",y);	
 	matrix delta;
 	matrixAllocate(&delta, net->sizes[len-1], 1);
-//	matrixPrint(&delta);
 	matrixCopy(&delta, &activations[len-1]);
-	delta.array[y] -= 1;
-//	matrixPrint(&delta);
+	
+	matsubone<<<1,1>>>(delta.array, y);	
 
 	matrixSigmoidPrime(&zactivations[len-2]);
 	matrixHamProd(&delta, &zactivations[len-2]);
@@ -45,20 +50,27 @@ void backprop(network* nabla, network* net, int x, data* batch_list){
 		matrixSigmoid(&zactivations[i-1]);
 
 		matrix delta0; 
-		matrixAllocate(&delta0, zactivations[i-1].m, 1);
-		
+		matrixAllocate(&delta0, zactivations[i-1].m, 1);	
+	
 		matrixMult(&weightsT,&delta, &delta0);
+	
 	        matrixFree(&delta);
 	        matrixFree(&weightsT);
 		delta = delta0;
-		matrixHamProd(&delta, &zactivations[i-1]);
 
+
+
+		matrixHamProd(&delta, &zactivations[i-1]);
+	
 		matrixCopy(&nabla->biases[i-1], &delta);
 		matrixTranspose(&activations[i-1]);
-		matrixMult(&delta, &activations[i-1], &nabla->weights[i-1]);
-	}
-	matrixFree(&delta);
 
+		matrixMult(&delta, &activations[i-1], &nabla->weights[i-1]);
+
+	}
+
+
+	matrixFree(&delta);
 	matrixFree(&activations[0]);
 	for(int i = 1; i < len; i++){
 		matrixFree(&zactivations[i-1]);

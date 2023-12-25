@@ -1,6 +1,6 @@
 int evaluate(network* net, data* datum, int print){
 	int len = net->num_layers;
-	matrix* activations = malloc(sizeof(matrix)*len); 
+	matrix* activations = (matrix*)malloc(sizeof(matrix)*len); 
 	matrixAllocate(&activations[0], net->sizes[0],1);
 	matrixCopy(&activations[0], &datum->matrix);
 	
@@ -13,9 +13,11 @@ int evaluate(network* net, data* datum, int print){
 	}
 	double max = 0;
 	int maxArg = 0;
+	float temp[10]; 
+	cudaMemcpy(temp, activations[len -1].array, 10 *sizeof(float), cudaMemcpyDeviceToHost);
 	for(int i = 0; i < 10; i++){
-		if (activations[len - 1].array[i] > max){
-			max = activations[len -1].array[i];
+		if (temp[i] > max){
+			max = temp[i];
 			maxArg = i;
 		}
 	}

@@ -10,8 +10,8 @@ void matrixAllocate(matrix* mat, int m, int n){
 
 int matrixCopy(matrix* dst, matrix* src){
 	if ((dst->n != src->n) || (dst->m != src->m)){
-		wprintf(L"(%d, %d) != (%d, %d)\n",dst->m,dst->n,src->m,src->n);
-		wprintf(L"matrixCopy wrong dimension\n");
+		printf("(%d, %d) != (%d, %d)\n",dst->m,dst->n,src->m,src->n);
+		printf("matrixCopy wrong dimension\n");
 		return -1;
 	}
 	int m = dst->m; int n = dst->n;
@@ -88,7 +88,7 @@ int matrixSigmoidPrime(matrix* A){
 
 int matrixMult(matrix* A, matrix* B, matrix* out){
 	if ((A->n != B->m)||(A->m != out->m)||(B->n != out->n)){
-		wprintf(L"(%d, %d) x (%d, %d) != (%d, %d)",A->m,A->n,B->n,B->m,out->m,out->n);
+		printf("(%d, %d) x (%d, %d) != (%d, %d)",A->m,A->n,B->n,B->m,out->m,out->n);
 		perror("matrixMult error: sizes incorrect");
 		return -1;
 	}
@@ -140,10 +140,18 @@ void matrixPrint(matrix* mat) {
 	int m = mat->m; int n = mat->n;
     for (int i = 0; i < m; i++) {
         for (int j = 0; j < n; j++) {
-            wprintf(L" %lf ", mat->array[i*n + j]);
+            printf(" %lf ", mat->array[i*n + j]);
         }
-        wprintf(L"\n");
+        printf("\n");
     }
+}
+void matrixNonZeros(matrix* mat) {
+	int m = mat->m; int n = mat->n;
+	int nonzeros = 0;
+    for (int i = 0; i < m *n; i++) {
+            if (mat->array[i]){ nonzeros++;};
+    }
+    printf("%d nonzeros \n", nonzeros);
 }
 
 void matrixFree(matrix* mat) {

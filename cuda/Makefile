@@ -1,8 +1,8 @@
 # Compiler flags
-CFLAGS = -lm -g -Wall -pedantic
-
+CFLAGS = -lm -g
+LIBS=
 # Source file
-SOURCE = main.c
+SOURCE = main.cu
 
 # Output file
 OUTPUT = net.exe
@@ -11,6 +11,7 @@ all: $(OUTPUT)
 
 $(OUTPUT): $(SOURCE)
 	clear
-	$(CC) $(SOURCE) -o $(OUTPUT) $(CFLAGS)
+	nvcc $(SOURCE) -o $(OUTPUT) $(LIBS) $(CFLAGS)
+	./net.exe
 clean:
 	rm -f $(OUTPUT)
