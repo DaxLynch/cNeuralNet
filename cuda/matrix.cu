@@ -116,7 +116,7 @@ __global__ void matsigp(float* dst, int m, int n){
 	int y = blockIdx.y * blockDim.y + threadIdx.y;
 	if((x < n) && (y < m)){
 		float temp = dst[y*n + x];
-		dst[y*n + x] = 1.0f/(2.0f - exp(-temp) - exp(temp));
+		dst[y*n + x] = 1.0f/(2.0f + exp(-temp) + exp(temp));
 	}
 }
 

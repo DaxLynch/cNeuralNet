@@ -22,6 +22,7 @@ void networkWeightsInit(network* net){
 		matrixRandFill(&net->weights[i]);
 		matrixRandFill(&net->biases[i]);
 	}
+	//matrixPrint(&net->weights[0]);
 }
 
 void networkPrint(network* net){
@@ -72,7 +73,9 @@ void update_mini_batch(network* net, int batch_size, int* batch_list, data* data
 	for(int i = 0; i < batch_size; i++){
 		network delta_nabla;
 		networkSizeAllocate(&delta_nabla, net); 
+
 		backprop(&delta_nabla, net, batch_list[i], data_set);
+
 		for(int j = 0; j < len - 1; j++){
 			matrixAdd(&(nabla.weights[j]),&(delta_nabla.weights[j]));
 			matrixAdd(&(nabla.biases[j]),&(delta_nabla.biases[j]));
@@ -86,8 +89,6 @@ void update_mini_batch(network* net, int batch_size, int* batch_list, data* data
 		matrixAdd(&net->weights[i],&nabla.weights[i]);
 		matrixAdd(&net->biases[i],&nabla.biases[i]);
 	}
-	matrixPrint(&nabla.weights[0]);
-	getchar();
 	networkFree(&nabla); //deallocate
 } 
 
@@ -117,6 +118,9 @@ void networkSGD(network* net, data* dataset, int dataLength, data* testSet, int 
 		shuffle(shuffled, dataLength);
 		for( int i = 0; i < dataLength/batch_size; i++){
 			update_mini_batch(net, batch_size,  shuffled + (batch_size*i), dataset, eta);
+			//matrixPrint(&net->weights[0]);
+			//getchar();
+
 		}
 		clock_t end = clock();
 		printf("Time taken: %f seconds\n", ((double)(end - start)) / CLOCKS_PER_SEC);
