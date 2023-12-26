@@ -120,6 +120,36 @@ __global__ void matsigp(float* dst, int m, int n){
 	}
 }
 
+int matrixMultTransFirst(matrix* A, matrix* B, matrix* out){
+	if ((A->m != B->m)||(A->n != out->m)||(B->n != out->n)){
+		printf("(%d, %d)T x (%d, %d) != (%d, %d)",A->m,A->n,B->n,B->m,out->m,out->n);
+		perror("matrixMult error: sizes incorrect");
+		return -1;
+	}
+	int am = A->n;
+       	int an = A->m;
+       	int bn = B->n; 
+	
+	dim3 threadsPerBlock(32, 32);
+	dim3 numBlocks(ceil(float(bn) / 32.0f), ceil(float(am) / 32.0f));
+	
+	matmulttrans1<<<numBlocks, threadsPerBlock>>>(A->array,B->array,out->array,am,an,bn);
+	
+	return 0;
+}
+
+__global__ void matmulttrans1(float* A, float* B, float* C, int m, int q, int n){ //basic implementation
+	int x = blockIdx.x * blockDim.x + threadIdx.x;
+	int y = blockIdx.y * blockDim.y + threadIdx.y;
+	float temp = 0;
+	if((x < n) && (y < m)){
+		for(int i = 0; i < q; i++){
+			temp += A[i*m + y] * B[i*n + x];	
+		}
+	C[y*n + x] += temp;
+	}
+}
+
 int matrixMult(matrix* A, matrix* B, matrix* out){
 	
 	if ((A->n != B->m)||(A->m != out->m)||(B->n != out->n)){
@@ -135,14 +165,7 @@ int matrixMult(matrix* A, matrix* B, matrix* out){
 	dim3 threadsPerBlock(32, 32);
 	dim3 numBlocks(ceil(float(bn) / 32.0f), ceil(float(am) / 32.0f));
 	
-	//cudaDeviceSynchronize();
 	matmult<<<numBlocks, threadsPerBlock>>>(A->array,B->array,out->array,am,an,bn);
-	//cudaDeviceSynchronize();
-	//int res = matrixIsZero(out);	
-	//if (res == 0){
-	//	matrixPrint(B);
-	//	exit(EXIT_FAILURE);
-	//}
 	
 	return 0;
 }
@@ -151,23 +174,136 @@ __global__ void matmult(float* A, float* B, float* C, int m, int q, int n){ //ba
 	int x = blockIdx.x * blockDim.x + threadIdx.x;
 	int y = blockIdx.y * blockDim.y + threadIdx.y;
 	float temp = 0;
-	//printf("%d \n", x);
-	//if(( x == 0) &&(y == 0)){printf("m: %d, q: %d, n: %d \n",m,q,n);}
 	if((x < n) && (y < m)){
 		for(int i = 0; i < q; i++){
 			temp += A[y*q + i] * B[i*n + x];	
 		}
-	//printf("%f \n",temp);
-	if (0)
-	{
-		for(int i = 0; i < q; i++){
-			printf("A[%d] = %f, B[%d*n + x] = B[%d] = %f, their product is %f \n", y*q + i, A[y*q + i],i, i*n + x, B[i*n + x], A[y*q + i] * B[i*n + x]);
-		}
+	C[y*n + x] += temp;
+	
 	}
+}
+
+int matrixMultTransSecond(matrix* A, matrix* B, matrix* out){
+	if ((A->n != B->n)||(A->m != out->m)||(B->m != out->n)){
+		printf("(%d, %d) x (%d, %d)T != (%d, %d)",A->m,A->n,B->n,B->m,out->m,out->n);
+		perror("matrixMult error: sizes incorrect");
+		return -1;
+	}
+	int am = A->m;
+       	int an = A->n;
+       	int bn = B->m; 
+	dim3 threadsPerBlock(32, 32);
+	dim3 numBlocks(ceil(float(bn) / 32.0f), ceil(float(am) / 32.0f));
+	matmulttrans2<<<numBlocks, threadsPerBlock>>>(A->array,B->array,out->array,am,an,bn);
+	return 0;
+}
+
+__global__ void matmulttrans2(float* A, float* B, float* C, int m, int q, int n){ //basic implementation
+	int x = blockIdx.x * blockDim.x + threadIdx.x;
+	int y = blockIdx.y * blockDim.y + threadIdx.y;
+	float temp = 0;
+	if((x < n) && (y < m)){
+		for(int i = 0; i < q; i++){
+			temp += A[y*q + i] * B[x*q + i];	
+		}
+	C[y*n + x] += temp;
+	}
+}
+
+int matrixMultTransFirstAndDelete(matrix* A, matrix* B, matrix* out){
+	if ((A->m != B->m)||(A->n != out->m)||(B->n != out->n)){
+		printf("(%d, %d)T x (%d, %d) != (%d, %d)",A->m,A->n,B->n,B->m,out->m,out->n);
+		perror("matrixMult error: sizes incorrect");
+		return -1;
+	}
+	int am = A->n;
+       	int an = A->m;
+       	int bn = B->n; 
+
+	dim3 threadsPerBlock(32, 32);
+	dim3 numBlocks(ceil(float(bn) / 32.0f), ceil(float(am) / 32.0f));
+	
+	matmulttrans1D<<<numBlocks, threadsPerBlock>>>(A->array,B->array,out->array,am,an,bn);
+	
+	return 0;
+}
+
+__global__ void matmulttrans1D(float* A, float* B, float* C, int m, int q, int n){
+	int x = blockIdx.x * blockDim.x + threadIdx.x;
+	int y = blockIdx.y * blockDim.y + threadIdx.y;
+	float temp = 0;
+	if((x < n) && (y < m)){
+		for(int i = 0; i < q; i++){
+			temp += A[i*m + y] * B[i*n + x];	
+		}
+	C[y*n + x] = temp;
+	}
+}
+
+int matrixMultAndDelete(matrix* A, matrix* B, matrix* out){
+	
+	if ((A->n != B->m)||(A->m != out->m)||(B->n != out->n)){
+		printf("(%d, %d) x (%d, %d) != (%d, %d)",A->m,A->n,B->n,B->m,out->m,out->n);
+		perror("matrixMult error: sizes incorrect");
+		return -1;
+	}
+	
+	int am = A->m;
+       	int an = A->n;
+       	int bn = B->n; 
+	
+	dim3 threadsPerBlock(32, 32);
+	dim3 numBlocks(ceil(float(bn) / 32.0f), ceil(float(am) / 32.0f));
+	
+	matmultD<<<numBlocks, threadsPerBlock>>>(A->array,B->array,out->array,am,an,bn);
+	
+	return 0;
+}
+
+__global__ void matmultD(float* A, float* B, float* C, int m, int q, int n){ //basic implementation
+	int x = blockIdx.x * blockDim.x + threadIdx.x;
+	int y = blockIdx.y * blockDim.y + threadIdx.y;
+	float temp = 0;
+	if((x < n) && (y < m)){
+		for(int i = 0; i < q; i++){
+			temp += A[y*q + i] * B[i*n + x];	
+		}
 	C[y*n + x] = temp;
 	
 	}
 }
+
+int matrixMultTransSecondAndDelete(matrix* A, matrix* B, matrix* out){
+	if ((A->n != B->n)||(A->m != out->m)||(B->m != out->n)){
+		printf("(%d, %d) x (%d, %d)T != (%d, %d)",A->m,A->n,B->n,B->m,out->m,out->n);
+		perror("matrixMult error: sizes incorrect");
+		return -1;
+	}
+
+	int am = A->m;
+       	int an = A->n;
+       	int bn = B->m; 
+	
+	dim3 threadsPerBlock(32, 32);
+	dim3 numBlocks(ceil(float(bn) / 32.0f), ceil(float(am) / 32.0f));
+	
+	matmulttrans2D<<<numBlocks, threadsPerBlock>>>(A->array,B->array,out->array,am,an,bn);
+	
+	return 0;
+}
+
+__global__ void matmulttrans2D(float* A, float* B, float* C, int m, int q, int n){ //basic implementation
+	int x = blockIdx.x * blockDim.x + threadIdx.x;
+	int y = blockIdx.y * blockDim.y + threadIdx.y;
+	float temp = 0;
+	if((x < n) && (y < m)){
+		for(int i = 0; i < q; i++){
+			temp += A[y*q + i] * B[x*q + i];	
+		}
+	C[y*n + x] = temp;
+	}
+}
+
 
 int matrixAdd(matrix* dst, matrix* src){ //in place,a s opposed to matrix multiply???
 	

@@ -6,6 +6,10 @@ void displayChar(unsigned char input){
 void dataLoader(data** dataPointer, char* images, char* labels, int dataLength){
 	FILE* training_images = fopen(images, "rb");
 	FILE* training_labels = fopen(labels, "rb");
+	if(training_images == NULL){
+		printf("fuck");
+		exit(EXIT_FAILURE);
+	}
 	unsigned char bs[16];
 	*dataPointer = (data*)malloc(sizeof(data) * dataLength);
 	fread(bs, 16, 1, training_images);
@@ -15,12 +19,12 @@ void dataLoader(data** dataPointer, char* images, char* labels, int dataLength){
 	for(int m = 0; m < dataLength; m++){
 		matrixAllocate(&((*dataPointer)[m].matrix), 784, 1);	
 		fread(buff, 1, 28*28, training_images);
-		for(int i = 0; i < 28 * 28; i ++){
+		for(int i = 0; i < (28 * 28); i ++){
 			buff2[i] = (((float)buff[i] - 33.0f)/255.0f);
 		}
 		cudaMemcpy((*dataPointer)[m].matrix.array, buff2, 28*28*sizeof(float), cudaMemcpyHostToDevice);
 		unsigned char temp;
-		fread(&temp, 1, 1, training_labels);
+		fread(&temp, sizeof(unsigned char), 1, training_labels);
 		(*dataPointer)[m].truth = (int)temp;
 	}
 	fclose(training_images);
@@ -53,8 +57,7 @@ void structDataViewer(data* dataPointer){
 	cudaMemcpy(temp, dataPointer->matrix.array, 28*28*sizeof(float), cudaMemcpyDeviceToHost);
 	for(int i = 0; i < 28; i++){
 		for(int j = 0; j < 28; j++){
-			displayChar(((unsigned char)((temp[i*28 + j]*255) + 33.0f)));
-			//displayChar((unsigned char)128);
+			displayChar((unsigned char)(temp[i*28 + j]*255.0f  + 33.0f));
 		}
 		printf("\n");
 	}
