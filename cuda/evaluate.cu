@@ -30,15 +30,15 @@ int evaluate(network* net, data* datum, int print){
 	free(activations);
 	return maxArg;
 }
-int evaluateSet(network* net, data* testData, int dataLength){
+float evaluateSet(network* net, data* testData, int dataLength, int print){
 	int correct = 0;
 	for(int i = 0; i < dataLength; i++){
 		if (evaluate(net, &testData[i], 0)  == testData[i].truth){
 			correct++;
 		}
 	}
-	printf("%.2f %% correct, %d/%d \n", ((double)correct)/((double)dataLength)*100.0, correct, dataLength);
-	return 0;
+	if (print) { printf("%.2f %% correct, %d/%d \n", ((float)correct)/((float)dataLength)*100.0, correct, dataLength); };
+	return (float)correct/(float)dataLength;
 }
 int evaluateSetManual(network* net, data* datum, int dataLength){
 	printf("Press q to exit, press any character to see the next evaluation\n");

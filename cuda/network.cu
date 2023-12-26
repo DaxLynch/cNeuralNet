@@ -97,9 +97,9 @@ void shuffle(int *array, size_t n)
     }
 }
 
-void networkSGD(network* net, data* dataset, int dataLength, data* testSet, int testLength, int test, int epochs, int batch_size, double eta){
+void networkSGD(network* net, data* dataset, int dataLength, data* testSet, int testLength, int print, int epochs, int batch_size, double eta){
 	for (int j = 0; j < epochs; j++){
-		printf("Starting epoch:%d \n", j);
+		if (print) {printf("Starting epoch:%d \n", j);};
 		clock_t start = clock();
 		int* shuffled = (int*)malloc(sizeof(int) * dataLength);
 		for(int i = 0; i < dataLength; i++){
@@ -112,12 +112,11 @@ void networkSGD(network* net, data* dataset, int dataLength, data* testSet, int 
 		
 		}
 		clock_t end = clock();
-		printf("Time taken: %f seconds\n", ((double)(end - start)) / CLOCKS_PER_SEC);
-		if (test){
-			evaluateSet(net, testSet, testLength);
+		if (print){
+			printf("Time taken: %f seconds\n", ((double)(end - start)) / CLOCKS_PER_SEC);
+			evaluateSet(net, testSet, testLength, 0);
 		}
 		free(shuffled);
-
 	}	
 }
 
