@@ -1,5 +1,5 @@
 #include "main.cuh"
-#define print 1
+#define Print 1
 #define DontPrint 0
 int main(){
 	
@@ -30,7 +30,7 @@ int main(){
 	dataLoader(&testingData, "trainingData/t10k-images.idx3-ubyte", "trainingData/t10k-labels.idx1-ubyte", testingLength);
 	//The above loades data in from the trainingData folder,
 	
-	networkSGD(&net, trainingData, trainingLength, testingData, testingLength, print, 10, 10, 5);
+	networkSGD(&net, trainingData, trainingLength, testingData, testingLength, Print, 50, 100, 5);
 	//The above does SGD on the training data, with it printing every epoch, and 10 epochs, and a batchsize of 10, with a learning rate of 5.
 	
 	evaluateSet(&net, testingData, testingLength);
