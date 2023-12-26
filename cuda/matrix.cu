@@ -146,7 +146,7 @@ __global__ void matmulttrans1(float* A, float* B, float* C, int m, int q, int n)
 		for(int i = 0; i < q; i++){
 			temp += A[i*m + y] * B[i*n + x];	
 		}
-	C[y*n + x] += temp;
+	C[y*n + x] = temp;
 	}
 }
 
@@ -178,8 +178,7 @@ __global__ void matmult(float* A, float* B, float* C, int m, int q, int n){ //ba
 		for(int i = 0; i < q; i++){
 			temp += A[y*q + i] * B[i*n + x];	
 		}
-	C[y*n + x] += temp;
-	
+	C[y*n + x] = temp;	
 	}
 }
 
@@ -206,11 +205,11 @@ __global__ void matmulttrans2(float* A, float* B, float* C, int m, int q, int n)
 		for(int i = 0; i < q; i++){
 			temp += A[y*q + i] * B[x*q + i];	
 		}
-	C[y*n + x] += temp;
+	C[y*n + x] = temp;
 	}
 }
 
-int matrixMultTransFirstAndDelete(matrix* A, matrix* B, matrix* out){
+int matrixMultTransFirstNoDelete(matrix* A, matrix* B, matrix* out){
 	if ((A->m != B->m)||(A->n != out->m)||(B->n != out->n)){
 		printf("(%d, %d)T x (%d, %d) != (%d, %d)",A->m,A->n,B->n,B->m,out->m,out->n);
 		perror("matrixMult error: sizes incorrect");
@@ -236,11 +235,11 @@ __global__ void matmulttrans1D(float* A, float* B, float* C, int m, int q, int n
 		for(int i = 0; i < q; i++){
 			temp += A[i*m + y] * B[i*n + x];	
 		}
-	C[y*n + x] = temp;
+	C[y*n + x] += temp;
 	}
 }
 
-int matrixMultAndDelete(matrix* A, matrix* B, matrix* out){
+int matrixMultNoDelete(matrix* A, matrix* B, matrix* out){
 	
 	if ((A->n != B->m)||(A->m != out->m)||(B->n != out->n)){
 		printf("(%d, %d) x (%d, %d) != (%d, %d)",A->m,A->n,B->n,B->m,out->m,out->n);
@@ -268,12 +267,12 @@ __global__ void matmultD(float* A, float* B, float* C, int m, int q, int n){ //b
 		for(int i = 0; i < q; i++){
 			temp += A[y*q + i] * B[i*n + x];	
 		}
-	C[y*n + x] = temp;
+	C[y*n + x] += temp;
 	
 	}
 }
 
-int matrixMultTransSecondAndDelete(matrix* A, matrix* B, matrix* out){
+int matrixMultTransSecondNoDelete(matrix* A, matrix* B, matrix* out){
 	if ((A->n != B->n)||(A->m != out->m)||(B->m != out->n)){
 		printf("(%d, %d) x (%d, %d)T != (%d, %d)",A->m,A->n,B->n,B->m,out->m,out->n);
 		perror("matrixMult error: sizes incorrect");
@@ -300,7 +299,7 @@ __global__ void matmulttrans2D(float* A, float* B, float* C, int m, int q, int n
 		for(int i = 0; i < q; i++){
 			temp += A[y*q + i] * B[x*q + i];	
 		}
-	C[y*n + x] = temp;
+	C[y*n + x] += temp;
 	}
 }
 
@@ -364,7 +363,7 @@ void matrixPrint(matrix* mat) {
 	printf("m: %d n: %d \n", m,n);
     	for (int i = 0; i < m; i++) {
         	for (int j = 0; j < n; j++) {
-        	  	  printf(" %lf ", temp[i*n + j]);
+        	  	  printf(" %f ", temp[i*n + j]);
         	}
         	printf("\n");
     	}

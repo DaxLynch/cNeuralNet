@@ -1,5 +1,6 @@
 #include "main.cuh"
 #define print 1
+#define DontPrint 0
 int main(){
 	
 	setlocale(LC_CTYPE, "");
@@ -29,11 +30,12 @@ int main(){
 	dataLoader(&testingData, "trainingData/t10k-images.idx3-ubyte", "trainingData/t10k-labels.idx1-ubyte", testingLength);
 	//The above loades data in from the trainingData folder,
 	
-	networkSGD(&net, trainingData, trainingLength, testingData, testingLength, print, 1, 100, 5);
+	networkSGD(&net, trainingData, trainingLength, testingData, testingLength, print, 10, 10, 5);
 	//The above does SGD on the training data, with it printing every epoch, and 10 epochs, and a batchsize of 10, with a learning rate of 5.
 	
-	evaluateSetManual(&net, testingData, testingLength); //This prints the data, alongside the returned value and the truth value
-	evaluateSetFailures(&net, testingData, testingLength); //Like above but it shows you the failures
+	evaluateSet(&net, testingData, testingLength);
+	//evaluateSetManual(&net, testingData, testingLength); //This prints the data, alongside the returned value and the truth value
+	//evaluateSetFailures(&net, testingData, testingLength); //Like above but it shows you the failures
 
 	networkFree(&net);//These commands free the networks and arrays
 	dataFree(&trainingData, trainingLength);

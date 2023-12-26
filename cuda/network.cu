@@ -69,30 +69,18 @@ void networkFree(network* net){
 void update_mini_batch(network* net, int batch_size, int* batch_list, data* data_set, double eta){
 	network nabla;
 	int len = net->num_layers;
-	networkSizeAllocate(&nabla, net); //allocate	
-
-		for(int i = 0; i < batch_size; i++){
-		network delta_nabla;
-		networkSizeAllocate(&delta_nabla, net);
-
-
-		backprop(&delta_nabla, net, batch_list[i], data_set);
-		for(int j = 0; j < len - 1; j++){
-			matrixAdd(&(nabla.weights[j]),&(delta_nabla.weights[j]));
-			matrixAdd(&(nabla.biases[j]),&(delta_nabla.biases[j]));
-		}
-
-	networkFree(&delta_nabla);
+	networkSizeAllocate(&nabla, net);
+	for(int i = 0; i < batch_size; i++){
+		backprop(&nabla, net, batch_list[i], data_set);
 	}
-
 	for(int i = 0; i < len - 1; i++){
 		matrixScalar(&nabla.weights[i], -eta/batch_size);
 		matrixScalar(&nabla.biases[i], -eta/batch_size);
 		matrixAdd(&net->weights[i],&nabla.weights[i]);
 		matrixAdd(&net->biases[i],&nabla.biases[i]);
 	}
-	networkFree(&nabla); //deallocate
-} 
+	networkFree(&nabla);
+}
 
 void shuffle(int *array, size_t n)
 {
@@ -117,12 +105,11 @@ void networkSGD(network* net, data* dataset, int dataLength, data* testSet, int 
 		for(int i = 0; i < dataLength; i++){
 			shuffled[i] = i;
 		}
+		
 		shuffle(shuffled, dataLength);
 		for( int i = 0; i < dataLength/batch_size; i++){
 			update_mini_batch(net, batch_size,  shuffled + (batch_size*i), dataset, eta);
-			//matrixPrint(&net->weights[0]);
-			//getchar();
-
+		
 		}
 		clock_t end = clock();
 		printf("Time taken: %f seconds\n", ((double)(end - start)) / CLOCKS_PER_SEC);
@@ -130,6 +117,7 @@ void networkSGD(network* net, data* dataset, int dataLength, data* testSet, int 
 			evaluateSet(net, testSet, testLength);
 		}
 		free(shuffled);
+
 	}	
 }
 

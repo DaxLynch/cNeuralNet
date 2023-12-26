@@ -6,9 +6,8 @@ int evaluate(network* net, data* datum, int print){
 	
 	for(int i = 1; i < len; i++){
 		matrixAllocate(&activations[i], net->sizes[i], 1);
-		matrixMult(&net->weights[i-1], &activations[i-1], &activations[i]);
+		matrixMultNoDelete(&net->weights[i-1], &activations[i-1], &activations[i]);
 		matrixAdd(&activations[i], &net->biases[i-1]);
-
 		matrixSigmoid(&activations[i]);
 	}
 	double max = 0;
