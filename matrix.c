@@ -84,7 +84,24 @@ int matrixSigmoidPrime(matrix* A){
 
 
 
-
+int matrixMultNoDelete(matrix* A, matrix* B, matrix* out){
+	if ((A->n != B->m)||(A->m != out->m)||(B->n != out->n)){
+		printf("(%d, %d) x (%d, %d) != (%d, %d)",A->m,A->n,B->n,B->m,out->m,out->n);
+		perror("matrixMult error: sizes incorrect");
+		return -1;
+	}
+	int am = A->m; int an = A->n; int bn = B->n; 
+	for(int i = 0; i < am; i++){
+	       for(int j = 0; j < bn; j++){
+			float temp = 0;
+			for(int k = 0; k < an; k++){
+			temp += A->array[i*an + k] * B->array[k*bn + j];
+			}
+			out->array[i*bn + j] += temp;
+	       }
+	}
+	return 0;
+}
 
 int matrixMult(matrix* A, matrix* B, matrix* out){
 	if ((A->n != B->m)||(A->m != out->m)||(B->n != out->n)){
@@ -92,16 +109,16 @@ int matrixMult(matrix* A, matrix* B, matrix* out){
 		perror("matrixMult error: sizes incorrect");
 		return -1;
 	}
-	int am = A->m; int an = A->n; int bn = B->n; 
-
+	int am = A->m; int an = A->n; int bn = B->n;
 	for(int i = 0; i < am; i++){
 	       for(int j = 0; j < bn; j++){
+			float temp = 0;
 			for(int k = 0; k < an; k++){
-				out->array[i*bn + j] += A->array[i*an + k] * B->array[k*bn + j];
+				temp += A->array[i*an + k] * B->array[k*bn + j];
 			}
+			out->array[i*bn + j] = temp;
 	       }
 	}
-
 	return 0;
 }
 int matrixAdd(matrix* dst, matrix* src){ //in place,a s opposed to matrix multiply???

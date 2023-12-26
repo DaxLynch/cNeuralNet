@@ -12,6 +12,7 @@ int matrixTranspose(matrix* mat);
 int matrixSigmoid(matrix* A);
 int matrixSigmoidPrime(matrix* A);
 int matrixMult(matrix* A, matrix* B, matrix* out);
+int matrixMultNoDelete(matrix* A, matrix* B, matrix* out);
 int matrixParaMult(matrix* A, matrix* B, matrix* out);
 int matrixAdd(matrix* dst, matrix* src);
 int matrixHamProd(matrix* dst, matrix* src);

@@ -66,22 +66,14 @@ void networkFree(network* net){
 
 
 void update_mini_batch(network* net, int batch_size, int* batch_list, data* data_set, double eta){
-	network nabla;
 	int len = net->num_layers;
+
+	network nabla;
 	networkSizeAllocate(&nabla, net); //allocate	
+
 	for(int i = 0; i < batch_size; i++){
-		network delta_nabla;
-		networkSizeAllocate(&delta_nabla, net); //Allocate
-	       	backprop(&delta_nabla, net, batch_list[i], data_set);
-		for(int j = 0; j < len - 1; j++){
-			matrixAdd(&(nabla.weights[j]),&(delta_nabla.weights[j]));
-			matrixAdd(&(nabla.biases[j]),&(delta_nabla.biases[j]));
-		}
-		networkFree(&delta_nabla);
-	
+	       	backprop(&nabla, net, batch_list[i], data_set);
 	}
-	matrixNonZeros(&nabla.weights[0]);
-	getchar();
 	for(int i = 0; i < len - 1; i++){
 		matrixScalar(&nabla.weights[i], -eta/batch_size);
 		matrixScalar(&nabla.biases[i], -eta/batch_size);
