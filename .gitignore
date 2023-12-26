@@ -7,6 +7,7 @@
 
 trainingData
 a.out
+net.exe
 
 # Object files
 *.o
