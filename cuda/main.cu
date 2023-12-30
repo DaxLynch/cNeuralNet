@@ -27,7 +27,7 @@ int main(){
 	network net;
 	networkAllocate(&net,3, 784, 30, 10); //Initilizes a 3 layer net with sizes 784, 30, 100
 	networkWeightsInit(&net); //Sets the weights and biases to gaussian distributed around 0
-	networkSGD(&net, trainingData, trainingLength, testingData, testingLength, Print, 3, 50, 5, 5);
+	networkSGD(&net, trainingData, trainingLength, testingData, testingLength, Print, 3, 50, 5, 0);
 	evaluateSet(&net, testingData, testingLength, Print);
 	evaluateSetManual(&net,testingData,testingLength);
 	//Hyper parameter grid

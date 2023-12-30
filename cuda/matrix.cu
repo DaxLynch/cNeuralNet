@@ -171,8 +171,8 @@ int matrixMult(matrix* A, matrix* B, matrix* out){
 }
 
 __global__ void matmult(float* A, float* B, float* C, int m, int q, int n){ //basic implementation
-	int x = blockIdx.x * blockDim.x + (threadIdx.x / 32);
-	int y = blockIdx.y * blockDim.y + (threadIdx.y % 32);
+	int x = blockIdx.x * blockDim.x + threadIdx.x ;
+	int y = blockIdx.y * blockDim.y + threadIdx.y ;
 
 
 

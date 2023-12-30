@@ -18,11 +18,17 @@ void networkAllocate(network* net, int len, ...){
 }
 
 void networkWeightsInit(network* net){
+	float fact = 1;
+	for(int i = 0; i < net->num_layers; i++){
+		fact*=net->sizes[i];
+	}
 	for(int i = 0; i < net->num_layers - 1; i++){
 		matrixRandFill(&net->weights[i]);
 		matrixRandFill(&net->biases[i]);
+		matrixScalar(&net->weights[i], 1/fact);
+		//matrixScalarFill(&net->biases[i], -0.5);
+		fact = fact/net->sizes[i]; 
 	}
-	//matrixPrint(&net->weights[0]);
 }
 
 void networkPrint(network* net){
