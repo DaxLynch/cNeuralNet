@@ -66,7 +66,7 @@ void networkFree(network* net){
 
 
 
-void update_mini_batch(network* net, int batch_size, int* batch_list, data* data_set, double eta){
+void update_mini_batch(network* net, int batch_size, int* batch_list, data* data_set, int dataLength, float eta, float regularization){
 	network nabla;
 	int len = net->num_layers;
 	networkSizeAllocate(&nabla, net);
@@ -76,6 +76,10 @@ void update_mini_batch(network* net, int batch_size, int* batch_list, data* data
 	for(int i = 0; i < len - 1; i++){
 		matrixScalar(&nabla.weights[i], -eta/batch_size);
 		matrixScalar(&nabla.biases[i], -eta/batch_size);
+		if( regularization > 0){
+			matrixScalar(&net->weights[i], (1.0f - eta*regularization/(float)dataLength));
+
+		}
 		matrixAdd(&net->weights[i],&nabla.weights[i]);
 		matrixAdd(&net->biases[i],&nabla.biases[i]);
 	}
@@ -97,7 +101,7 @@ void shuffle(int *array, size_t n)
     }
 }
 
-void networkSGD(network* net, data* dataset, int dataLength, data* testSet, int testLength, int print, int epochs, int batch_size, double eta){
+void networkSGD(network* net, data* dataSet, int dataLength, data* testSet, int testLength, int print, int epochs, int batch_size, float eta, float lambda){
 	for (int j = 0; j < epochs; j++){
 		if (print) {printf("Starting epoch:%d \n", j);};
 		clock_t start = clock();
@@ -108,13 +112,13 @@ void networkSGD(network* net, data* dataset, int dataLength, data* testSet, int 
 		
 		shuffle(shuffled, dataLength);
 		for( int i = 0; i < dataLength/batch_size; i++){
-			update_mini_batch(net, batch_size,  shuffled + (batch_size*i), dataset, eta);
+			update_mini_batch(net, batch_size,  shuffled + (batch_size*i), dataSet,dataLength, eta, lambda);
 		
 		}
 		clock_t end = clock();
 		if (print){
 			printf("Time taken: %f seconds\n", ((double)(end - start)) / CLOCKS_PER_SEC);
-			evaluateSet(net, testSet, testLength, 0);
+			evaluateSet(net, testSet, testLength, 1);
 		}
 		free(shuffled);
 	}	

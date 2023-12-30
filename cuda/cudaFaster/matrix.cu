@@ -174,30 +174,42 @@ __global__ void matmult(float* A, float* B, float* C, int m, int q, int n){ //ba
 	int x = blockIdx.x * blockDim.x + threadIdx.x ;
 	int y = blockIdx.y * blockDim.y + threadIdx.y ;
 
-
-
+	A += (blockIdx.y * 32  + threadIdx.y) * q  + threadIdx.x;
+	B += (blockIdx.y * 32 + threadIdx.y) * n + (blockIdx.x * 32) + threadIdx.x ;
+	C += (blockIdx.y * 32 * n) * (blockIdx.x * 32);
+	
 	float temp = 0;
-	if((x < n) && (y < m)){
 		__shared__ float As[32*32];
 		__shared__ float Bs[32*32];
 		int i = 0;
-		for(; i < q/32; i++){
+		while( i < q - 31 ){
+			As[threadIdx.y * 32 + threadIdx.x] = A[0];
+			Bs[threadIdx.x * 32 + threadIdx.y] = B[0];
 			__syncthreads();
-			As[threadIdx.y * 32 + threadIdx.x] = A[(blockIdx.y * 32 + threadIdx.y) * q + ( i * 32 + threadIdx.x )];
-			Bs[threadIdx.y * 32 + threadIdx.x] = B[(i * 32 + threadIdx.y) * n + (blockIdx.x * 32 + threadIdx.x)];
-			__syncthreads();
+			A+= 32;
+			B += n;	
+
 			for(int j = 0; j < 32; j++){
-				temp += As[threadIdx.y * 32 + j] * Bs[j * 32 + threadIdx.x];	
+				temp += As[threadIdx.y * 32 + j] * Bs[threadIdx.x * 32 + j];	
 			}
+			i+= 32;
+			__syncthreads();
 		}
-		//for(i = i*32; i < q; i++){
+
+		if (i != q){
+			As[threadIdx.y * 32 + threadIdx.x] = A[0];
+			Bs[threadIdx.x * 32 + threadIdx.y] = B[0];
+			__syncthreads();
+
+			for(int j = 0; j < (q - i); j++){	
+				temp += As[threadIdx.y * 32 + j] * Bs[ threadIdx.x * 32 + j];	
+			}
+		}				
+
 			
-			
-			
-	//	}
-		
-	C[y*n + x] = temp;	
-	}
+		if((x < n) && (y < m)){
+			C[y*n + x] = temp;	
+		}
 }
 
 int matrixMultTransSecond(matrix* A, matrix* B, matrix* out){
@@ -421,7 +433,7 @@ int matrixEqual(matrix* A, matrix* B) {
     	for (int i = 0; i < m; i++) {
         	for (int j = 0; j < n; j++) {
         		if(temp1[i*n + j] - temp2[i*n + j]  >  .01f ){
-				printf("%f != %f \n", temp2[i * n + j], temp1[i * n + j]);
+				printf("i: %d, j: %d, ,%f != %f \n", i,j,temp1[i * n + j], temp2[i * n + j]);
 				nonequals++;
 			}	
 		}

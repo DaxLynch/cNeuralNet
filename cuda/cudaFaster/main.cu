@@ -5,15 +5,15 @@ int main(){
 	
 	setlocale(LC_CTYPE, "");
 	initMat();
-	int size = 512;	
+	int m = 4091; int q = 4096; int n = 4091;
 	matrix test1;
 	matrix test2;
 	matrix test3;
 	matrix test4;
-	matrixAllocate(&test1,size,size);
-	matrixAllocate(&test2,size,size);
-	matrixAllocate(&test3,size,size);
-	matrixAllocate(&test4,size,size);
+	matrixAllocate(&test1,m,q);
+	matrixAllocate(&test2,q,n);
+	matrixAllocate(&test3,m,n);
+	matrixAllocate(&test4,m,n);
 	matrixRandFill(&test2);
 	matrixRandFill(&test1);
 	clock_t start = clock();
@@ -25,9 +25,6 @@ int main(){
 	matrixMultNoDelete(&test1,&test2,&test4);
 	end = clock();
 	printf("Time taken: %f seconds\n", ((double)(end - start)) / CLOCKS_PER_SEC);
-	//matrixPrint(&test3);
-	//printf("Here lies dax \n");
-	//matrixPrint(&test4);
 
 	printf("Here lies dax \n");
 	matrixEqual(&test3, &test4);

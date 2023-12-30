@@ -171,10 +171,15 @@ int matrixMult(matrix* A, matrix* B, matrix* out){
 }
 
 __global__ void matmult(float* A, float* B, float* C, int m, int q, int n){ //basic implementation
-	int x = blockIdx.x * blockDim.x + threadIdx.x;
-	int y = blockIdx.y * blockDim.y + threadIdx.y;
+	int x = blockIdx.x * blockDim.x + (threadIdx.x / 32);
+	int y = blockIdx.y * blockDim.y + (threadIdx.y % 32);
+
+
+
 	float temp = 0;
 	if((x < n) && (y < m)){
+
+
 		for(int i = 0; i < q; i++){
 			temp += A[y*q + i] * B[i*n + x];	
 		}
