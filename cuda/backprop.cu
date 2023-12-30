@@ -31,15 +31,15 @@ void backprop(network* nabla, network* net, int x, data* batch_list){
 		matrixSigmoid(&activations[i]);
 	}
 	int y = batch_list[x].truth; //only relevant to this data SHould be changed to a truth vector
-	matrixCopy(&delta[1], &activations[len-1]);
+	matrixCopy(&delta[len -2], &activations[len-1]);
 
-	matsubone<<<1,1>>>(delta[1].array, y); //these ops can be combined
+	matsubone<<<1,1>>>(delta[len -2].array, y); //these ops can be combined
 
 	matrixSigmoidPrime(&zactivations[len-2]);
-	matrixHamProd(&delta[1], &zactivations[len-2]);
-	matrixAdd(&nabla->biases[len-2], &delta[1]); //add size check for mat copy
+	matrixHamProd(&delta[len - 2], &zactivations[len-2]);
+	matrixAdd(&nabla->biases[len-2], &delta[len -2]); //add size check for mat copy
 	
-	matrixMultTransSecondNoDelete(&delta[1], &activations[len-2], &nabla->weights[len-2]);
+	matrixMultTransSecondNoDelete(&delta[len -2], &activations[len-2], &nabla->weights[len-2]);
 
 	for(int i = len - 2; i > 0; i--){
 

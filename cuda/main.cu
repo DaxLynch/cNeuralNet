@@ -25,9 +25,9 @@ int main(){
 	dataLoader(&testingData, "trainingData/t10k-images.idx3-ubyte", "trainingData/t10k-labels.idx1-ubyte", testingLength);
 	//The above loades data in from the trainingData folder,
 	network net;
-	networkAllocate(&net,3, 784, 30, 10); //Initilizes a 3 layer net with sizes 784, 30, 100
+	networkAllocate(&net,4, 784, 100, 30, 10); //Initilizes a 3 layer net with sizes 784, 30, 100
 	networkWeightsInit(&net); //Sets the weights and biases to gaussian distributed around 0
-	networkSGD(&net, trainingData, trainingLength, testingData, testingLength, Print, 3, 50, 5, 1);
+	networkSGD(&net, trainingData, trainingLength, testingData, testingLength, Print, 3, 50, 5, 5);
 	evaluateSet(&net, testingData, testingLength, Print);
 	evaluateSetManual(&net,testingData,testingLength);
 	//Hyper parameter grid

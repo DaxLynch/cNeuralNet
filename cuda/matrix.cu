@@ -42,8 +42,8 @@ void matrixRandFill(matrix* mat){ //Do not call if anything has been initilized 
 void matrixSgnScalar(matrix* mat, float scalar){
 	
 	int m = mat->m; int n = mat->n;
-	dim3 threadsPerBlock(32,32);
-	dim3 numBlocks(ceil(float(n) / 32.0f), ceil(float(m) / 32.0f));
+	dim3 threadsPerBlock(16,16);
+	dim3 numBlocks(ceil(float(n) / 16.0f), ceil(float(m) / 16.0f));
 	matsgnscalar<<<numBlocks, threadsPerBlock>>>(mat->array, scalar, m, n);
 	
 }
@@ -60,8 +60,8 @@ __global__ void matsgnscalar(float* A, float scalar, int m, int n){
 void matrixScalar(matrix* mat, float scalar){
 	
 	int m = mat->m; int n = mat->n;
-	dim3 threadsPerBlock(32,32);
-	dim3 numBlocks(ceil(float(n) / 32.0f), ceil(float(m) / 32.0f));
+	dim3 threadsPerBlock(16,16);
+	dim3 numBlocks(ceil(float(n) / 16.0f), ceil(float(m) / 16.0f));
 	matscalar<<<numBlocks, threadsPerBlock>>>(mat->array, scalar, m, n);
 	
 }
@@ -77,8 +77,8 @@ int matrixTranspose(matrix* mat){
 	int m = mat->m; int n = mat->n;
 	float* newArray = NULL;
 	cudaMalloc(&newArray, sizeof(float) * m*n);
-	dim3 threadsPerBlock(32,32);
-	dim3 numBlocks(ceil(float(n)/32.0f), ceil(float(m)/32.0f));
+	dim3 threadsPerBlock(16,16);
+	dim3 numBlocks(ceil(float(n)/16.0f), ceil(float(m)/16.0f));
 
 	mattrans<<<numBlocks, threadsPerBlock>>>(newArray, mat->array, m,n);
 	mat->n = mat->m;
@@ -102,8 +102,8 @@ int matrixSigmoid(matrix* A){
 		perror("Cannot do sigmoid");
 		return -1;
 	};
-	dim3 threadsPerBlock(32,32);
-	dim3 numBlocks(ceil(float(A->m)/32.0f), ceil(float(A->n)/32.0f));
+	dim3 threadsPerBlock(16,16);
+	dim3 numBlocks(ceil(float(A->n)/16.0f), ceil(float(A->m)/16.0f));
 	
 	matsig<<<numBlocks, threadsPerBlock>>>(A->array, A->m,A->n);
 	
@@ -123,8 +123,8 @@ int matrixSigmoidPrime(matrix* A){
 		perror("Cannot do sigmoid prime");
 		return -1;
 	};
-	dim3 threadsPerBlock(32,32);
-	dim3 numBlocks(ceil(float(A->m)/32.0f), ceil(float(A->n)/32.0f));
+	dim3 threadsPerBlock(16,16);
+	dim3 numBlocks(ceil(float(A->n)/16.0f), ceil(float(A->m)/16.0f));
 
 	matsigp<<<numBlocks, threadsPerBlock>>>(A->array, A->m,A->n);
 	return 0;
@@ -148,8 +148,8 @@ int matrixMultTransFirst(matrix* A, matrix* B, matrix* out){
        	int an = A->m;
        	int bn = B->n; 
 	
-	dim3 threadsPerBlock(32, 32);
-	dim3 numBlocks(ceil(float(bn) / 32.0f), ceil(float(am) / 32.0f));
+	dim3 threadsPerBlock(16, 16);
+	dim3 numBlocks(ceil(float(bn) / 16.0f), ceil(float(am) / 16.0f));
 	
 	matmulttrans1<<<numBlocks, threadsPerBlock>>>(A->array,B->array,out->array,am,an,bn);
 	
@@ -175,13 +175,12 @@ int matrixMult(matrix* A, matrix* B, matrix* out){
 		perror("matrixMult error: sizes incorrect");
 		return -1;
 	}
-	
 	int am = A->m;
        	int an = A->n;
        	int bn = B->n; 
 	
-	dim3 threadsPerBlock(32, 32);
-	dim3 numBlocks(ceil(float(bn) / 32.0f), ceil(float(am) / 32.0f));
+	dim3 threadsPerBlock(16, 16);
+	dim3 numBlocks(ceil(float(bn) / 16.0f), ceil(float(am) / 16.0f));
 	
 	matmult<<<numBlocks, threadsPerBlock>>>(A->array,B->array,out->array,am,an,bn);
 	
@@ -196,8 +195,6 @@ __global__ void matmult(float* A, float* B, float* C, int m, int q, int n){ //ba
 
 	float temp = 0;
 	if((x < n) && (y < m)){
-
-
 		for(int i = 0; i < q; i++){
 			temp += A[y*q + i] * B[i*n + x];	
 		}
@@ -214,8 +211,8 @@ int matrixMultTransSecond(matrix* A, matrix* B, matrix* out){
 	int am = A->m;
        	int an = A->n;
        	int bn = B->m; 
-	dim3 threadsPerBlock(32, 32);
-	dim3 numBlocks(ceil(float(bn) / 32.0f), ceil(float(am) / 32.0f));
+	dim3 threadsPerBlock(16, 16);
+	dim3 numBlocks(ceil(float(bn) / 16.0f), ceil(float(am) / 16.0f));
 	matmulttrans2<<<numBlocks, threadsPerBlock>>>(A->array,B->array,out->array,am,an,bn);
 	return 0;
 }
@@ -242,8 +239,8 @@ int matrixMultTransFirstNoDelete(matrix* A, matrix* B, matrix* out){
        	int an = A->m;
        	int bn = B->n; 
 
-	dim3 threadsPerBlock(32, 32);
-	dim3 numBlocks(ceil(float(bn) / 32.0f), ceil(float(am) / 32.0f));
+	dim3 threadsPerBlock(16, 16);
+	dim3 numBlocks(ceil(float(bn) / 16.0f), ceil(float(am) / 16.0f));
 	
 	matmulttrans1D<<<numBlocks, threadsPerBlock>>>(A->array,B->array,out->array,am,an,bn);
 	
@@ -274,8 +271,8 @@ int matrixMultNoDelete(matrix* A, matrix* B, matrix* out){
        	int an = A->n;
        	int bn = B->n; 
 	
-	dim3 threadsPerBlock(32, 32);
-	dim3 numBlocks(ceil(float(bn) / 32.0f), ceil(float(am) / 32.0f));
+	dim3 threadsPerBlock(16, 16);
+	dim3 numBlocks(ceil(float(bn) / 16.0f), ceil(float(am) / 16.0f));
 	
 	matmultD<<<numBlocks, threadsPerBlock>>>(A->array,B->array,out->array,am,an,bn);
 	
@@ -306,8 +303,8 @@ int matrixMultTransSecondNoDelete(matrix* A, matrix* B, matrix* out){
        	int an = A->n;
        	int bn = B->m; 
 	
-	dim3 threadsPerBlock(32, 32);
-	dim3 numBlocks(ceil(float(bn) / 32.0f), ceil(float(am) / 32.0f));
+	dim3 threadsPerBlock(16, 16);
+	dim3 numBlocks(ceil(float(bn) / 16.0f), ceil(float(am) / 16.0f));
 	
 	matmulttrans2D<<<numBlocks, threadsPerBlock>>>(A->array,B->array,out->array,am,an,bn);
 	
@@ -335,8 +332,8 @@ int matrixAdd(matrix* dst, matrix* src){ //in place,a s opposed to matrix multip
 	}
 	int m = dst->m; int n = dst->n;
 	
-	dim3 threadsPerBlock(32, 32);
-	dim3 numBlocks(ceil(float(n) / 32.0f), ceil(float(m) / 32.0f));
+	dim3 threadsPerBlock(16, 16);
+	dim3 numBlocks(ceil(float(n) / 16.0f), ceil(float(m) / 16.0f));
 
 	matadd<<<numBlocks, threadsPerBlock>>>(dst->array,src->array,m,n);
 	
@@ -360,8 +357,8 @@ int matrixHamProd(matrix* dst, matrix* src){ //in place,a s opposed to matrix mu
 	}
 	int m = dst->m; int n = dst->n;
 	
-	dim3 threadsPerBlock(32, 32);
-	dim3 numBlocks(ceil(float(n) / 32.0f), ceil(float(m) / 32.0f));
+	dim3 threadsPerBlock(16, 16);
+	dim3 numBlocks(ceil(float(n) / 16.0f), ceil(float(m) / 16.0f));
 
 	matham<<<numBlocks, threadsPerBlock>>>(dst->array,src->array,m,n);
 	

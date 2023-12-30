@@ -6,14 +6,14 @@ int evaluate(network* net, data* datum, int print){
 	
 	for(int i = 1; i < len; i++){
 		matrixAllocate(&activations[i], net->sizes[i], 1);
-		matrixMultNoDelete(&net->weights[i-1], &activations[i-1], &activations[i]);
+		matrixMult(&net->weights[i-1], &activations[i-1], &activations[i]);
 		matrixAdd(&activations[i], &net->biases[i-1]);
 		matrixSigmoid(&activations[i]);
 	}
 	double max = 0;
 	int maxArg = 0;
 	float temp[10]; 
-	cudaMemcpy(temp, activations[len -1].array, 10 *sizeof(float), cudaMemcpyDeviceToHost);
+	cudaMemcpy(temp, activations[len - 1].array, 10 *sizeof(float), cudaMemcpyDeviceToHost);
 	for(int i = 0; i < 10; i++){
 		if (temp[i] > max){
 			max = temp[i];
