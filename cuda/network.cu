@@ -84,7 +84,8 @@ void update_mini_batch(network* net, int batch_size, int* batch_list, data* data
 		matrixScalar(&nabla.biases[i], -eta/batch_size);
 		if( regularization > 0){
 			matrixScalar(&net->weights[i], (1.0f - eta*regularization/(float)dataLength));
-
+		} else if (regularization < 0){
+			matrixSgnScalar(&net->weights[i], -1*eta*regularization/(float)dataLength);
 		}
 		matrixAdd(&net->weights[i],&nabla.weights[i]);
 		matrixAdd(&net->biases[i],&nabla.biases[i]);

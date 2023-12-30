@@ -10,6 +10,8 @@ int matrixCopy(matrix* dst, matrix* src);
 void matrixRandFill(matrix* mat);
 void matrixScalar(matrix* mat, float scalar);
 __global__ void matscalar(float* A, float scalar, int m, int n);
+void matrixSgnScalar(matrix* mat, float scalar);
+__global__ void matsgnscalar(float* A, float scalar, int m, int n);
 int matrixTranspose(matrix* mat);
 __global__ void mattrans(float* dst, float* src, int m, int n);
 int matrixSigmoid(matrix* A);

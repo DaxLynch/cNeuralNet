@@ -39,6 +39,24 @@ void matrixRandFill(matrix* mat){ //Do not call if anything has been initilized 
 	return;
 }
 
+void matrixSgnScalar(matrix* mat, float scalar){
+	
+	int m = mat->m; int n = mat->n;
+	dim3 threadsPerBlock(32,32);
+	dim3 numBlocks(ceil(float(n) / 32.0f), ceil(float(m) / 32.0f));
+	matsgnscalar<<<numBlocks, threadsPerBlock>>>(mat->array, scalar, m, n);
+	
+}
+__global__ void matsgnscalar(float* A, float scalar, int m, int n){
+	int x = blockIdx.x * blockDim.x + threadIdx.x;
+	int y = blockIdx.y * blockDim.y + threadIdx.y;
+	if((x < n) && (y < m)){
+		float sign = 1;
+		if( A[y*n + x] < 0){ sign = -1;};
+		A[y*n + x] -= scalar*sign;
+	}
+}
+
 void matrixScalar(matrix* mat, float scalar){
 	
 	int m = mat->m; int n = mat->n;
